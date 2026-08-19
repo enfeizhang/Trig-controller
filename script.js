@@ -1,6 +1,8 @@
-let gcodeCheck = ["G0", "G1", "G2", "G3", "G4", "G5", "G10", "G11", "G17", "G18", "G19", "G20", "G21", "G26", "G27", "G28", "G29", "G30", "G31", "G32", "G33", "G34", "G35", "G38.2", "G38.3", "G38.4", "G38.5", "G42", "G53", "G54", "G55", "G56", "G57", "G58", "G59", "G60", "G61", "G76", "G80", "G90", "G91", "G92",
+let gcodeCheck = [
+  "G0", "G1", "G2", "G3", "G4", "G5", "G10", "G11", "G17", "G18", "G19", "G20", "G21", "G26", "G27", "G28", "G29", "G30", "G31", "G32", "G33", "G34", "G35", "G38.2", "G38.3", "G38.4", "G38.5", "G42", "G53", "G54", "G55", "G56", "G57", "G58", "G59", "G60", "G61", "G76", "G80", "G90", "G91", "G92",
   "M0", "M1", "M3", "M4", "M5", "M17", "M18", "M20", "M21", "M22", "M23", "M24", "M25", "M26", "M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43", "M48", "M73", "M75", "M76", "M77", "M78", "M80", "M81", "M82", "M83", "M84", "M85", "M92", "M100", "M104", "M105", "M106", "M107", "M108", "M109", "M110", "M111", "M112", "M113", "M114", "M115", "M117", "M118", "M119", "M120", "M121", "M122", "M125", "M126", "M127", "M128", "M129", "M140", "M141", "M142", "M143", "M144", "M145", "M149", "M150", "M155", "M163", "M164", "M165", "M166", "M190", "M200", "M201", "M203", "M204", "M205", "M206", "M207", "M208", "M209", "M211", "M217", "M218", "M220", "M221", "M226", "M240", "M250", "M260", "M261", "M280", "M281", "M282", "M283", "M290", "M300", "M301", "M302", "M303", "M304", "M305", "M306", "M350", "M351", "M355", "M360", "M361", "M362", "M363", "M364", "M365", "M380", "M381", "M400", "M401", "M402", "M403", "M404", "M405", "M406", "M407", "M408", "M420", "M421", "M422", "M423", "M428", "M430", "M486", "M500", "M501", "M502", "M503", "M504", "M505", "M524", "M540", "M569", "M575", "M600", "M603", "M605", "M665", "M666", "M667", "M668", "M669", "M672", "M673", "M701", "M702", "M703", "M710", "M851", "M852", "M853", "M860", "M861", "M862", "M900", "M906", "M907", "M908", "M909", "M910", "M911", "M912", "M913", "M914", "M915", "M916", "M917", "M918", "M919", "M920", "M921", "M922", "M923", "M924", "M925", "M997", "M999",
-  "T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"];
+  "T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"
+];
 
 let initX = 0;
 let initY = 0;
@@ -11,6 +13,10 @@ let bedTemp = 0;
 
 let keyInterval;
 let keyIntervalRunning = false;
+
+const Xc = 110; // absolute positioning for center line
+const ytot = 150;
+const Zpen = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -36,10 +42,8 @@ function setup() {
       "M84 S0",
       "G92 E0",
       "M302 P1",
-      `G0 X${initX} Y${initY} Z${initZ} F1500`,
-    ]
-
-    ;
+      `G0 X${initX} Y${initY} Z${initZ} F1500`
+    ];
     fab.print();
     pushMessage("printing started", "green");
   });
@@ -55,7 +59,7 @@ function setup() {
       getInitTemps();
       fab.commands = [
         `M104 S${nozzleTemp}`,
-        `M140 S${bedTemp}`,
+        `M140 S${bedTemp}`
       ];
       fab.print();
       pushMessage("heating nozzle/bed", "magenta");
@@ -69,7 +73,7 @@ function setup() {
       getInitTemps();
       fab.commands = [
         `M104 S0`,
-        `M140 S0`,
+        `M140 S0`
       ];
       fab.print();
       pushMessage("cooling nozzle/bed", "blue");
@@ -81,15 +85,11 @@ function setup() {
   document.querySelector("#cold-extrusion").addEventListener("change", () => {
     if (fab.isPrinting) {
       if (document.querySelector("#cold-extrusion").checked) {
-        fab.commands = [
-          `M302 P1`,
-        ];
+        fab.commands = [`M302 P1`];
         fab.print();
         pushMessage("cold extrusion enabled", "blue");
       } else {
-        fab.commands = [
-          `M302 P0`,
-        ];
+        fab.commands = [`M302 P0`];
         fab.print();
       }
     } else {
@@ -104,16 +104,12 @@ function setup() {
         let fanSpeed = document.querySelector("#fan-speed").value;
         fanSpeed = fanSpeed > 255 ? 255 : fanSpeed < 0 ? 0 : Math.floor(fanSpeed);
         console.log(`fan speed: ${fanSpeed}`);
-        fab.commands = [
-          `M106 S${document.querySelector("#fan-speed").value}`,
-        ];
+        fab.commands = [`M106 S${fanSpeed}`];
         fab.print();
         pushMessage("fan on", "blue");
       } else {
         console.log(`fan off`);
-        fab.commands = [
-          `M106 S0`,
-        ];
+        fab.commands = [`M106 S0`];
         fab.print();
         pushMessage("fan off", "blue");
       }
@@ -173,12 +169,10 @@ function draw() {
   }
 }
 
-
-
 function getInitPosition() {
-  initX = Xc
-  initY = 0
-  initZ = Zpen
+  initX = Xc;
+  initY = 0;
+  initZ = Zpen;
 }
 
 function getInitTemps() {
@@ -245,14 +239,9 @@ function checkGcode(_gcode) {
   }
 }
 
-const Xc = 110 // absolute positioning for the center line
-const ytot = 150
-const Zpen = 10
-
 document.querySelector("#axes-btn").addEventListener("click", () => {
-    const A = parseFloat(document.querySelector('#amplitude-input').value) || 60
-  const rawaxessequence =
-`G0 X${Xc - A} Y0 Z${Zpen + 3} F2000
+  const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
+  const rawaxessequence = `G0 X${Xc - A} Y0 Z${Zpen + 3} F2000
 G0 Z${Zpen} F2000
 G0 X${Xc + A} F2000
 G0 Z${Zpen + 3} F2000
@@ -260,62 +249,64 @@ G0 X${Xc} F2000
 G0 Z${Zpen} F2000
 G0 Y${ytot} F2000
 G0 Z${Zpen + 3} F2000
-G0 X${Xc} Y0 F2000`
+G0 X${Xc} Y0 F2000`;
 
   if (fab.isPrinting) {
-
-fab.commands = rawaxessequence
-    .split("\n")
-    .map(line => checkGcode(line.trim()));
+    fab.commands = rawaxessequence
+      .split("\n")
+      .map(line => checkGcode(line.trim()));
 
     fab.print();
-  pushMessage("sent axes sequence", "blue");
-} else {
-  pushMessage("initialize printer first", "red");
-}})
+    pushMessage("sent axes sequence", "blue");
+  } else {
+    pushMessage("initialize printer first", "red");
+  }
+});
 
 document.querySelector("#reset-btn").addEventListener("click", () => {
   const resetsequence = `G90
 G0 Z${Zpen + 3} F1000
-G0 X${Xc} Y0 F5000`
+G0 X${Xc} Y0 F5000`;
 
- if (fab.isPrinting) {
-
-fab.commands = resetsequence
-    .split("\n")
-    .map(line => checkGcode(line.trim()));
+  if (fab.isPrinting) {
+    fab.commands = resetsequence
+      .split("\n")
+      .map(line => checkGcode(line.trim()));
 
     fab.print();
-  pushMessage("sent reset sequence", "blue");
-} else {
-  pushMessage("initialize printer first", "red");
-}})
+    pushMessage("sent reset sequence", "blue");
+  } else {
+    pushMessage("initialize printer first", "red");
+  }
+});
 
-function sy(y, amp, length, midline){
-    return Xc + amp * Math.sin((2*Math.PI/length) * y)+ midline}
+function sy(y, amp, length, midline) {
+  return Xc + amp * Math.sin((2 * Math.PI / length) * y) + midline;
+}
 
+document.querySelector('#drawgraph-btn').addEventListener("click", function() {
+  const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
+  const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100;
+  const D = parseFloat(document.querySelector('#midline-input').value) || 0;
 
-document.querySelector('#drawgraph-btn').addEventListener("click", function(){
-  const A = parseFloat(document.querySelector('#amplitude-input').value) || 60// amplitude in mm
-  const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100// this changes as "b"
-  const D = parseFloat(document.querySelector('#midline-input').value) || 0
-  
-  const yvaluesdown = []
-  for(let i = 0; i<= ytot; i+=2){yvaluesdown.push(i)}
-  //const xvaluesdown = yvaluesdown.map(y => sy(y, A, wlen, D))
-  const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y} F1000`)
-  const sinegraphgcode = `G90 ${`\n`} G0 X${Xc} Y0 F4000 ${`\n`} G0 Z${Zpen} F1000 ${`\n`}` + gcodedownlist.join(`\n`)
-  
+  const yvaluesdown = [];
+  for (let i = 0; i <= ytot; i += 2) {
+    yvaluesdown.push(i);
+  }
+
+  const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y} F1000`);
+  const sinegraphgcode = `G90\nG0 X${Xc} Y0 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
+
   if (fab.isPrinting) {
+    const formattedGcode = sinegraphgcode
+      .split("\n")
+      .map(line => checkGcode(line));
 
-  const formattedGcode = sinegraphgcode
-    .split("\n")
-    .map(line => checkGcode(line));
+    fab.commands = formattedGcode;
+    fab.print();
 
-  fab.commands = formattedGcode;
-  fab.print();
-
-  pushMessage("sent custom sine graph sequence", "blue");
-} else {
-  pushMessage("initialize printer first", "red");
-}})
+    pushMessage("sent custom sine graph sequence", "blue");
+  } else {
+    pushMessage("initialize printer first", "red");
+  }
+});
