@@ -1,0 +1,310 @@
+
+  html {
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+  }
+
+
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  h1 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    position: relative;
+    display: block;
+    clear: both;
+    margin-bottom: 1em;
+  }
+
+  #container {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    padding: 1em;
+  }
+
+  #variable-controller{
+    color: bisque
+  }
+
+  .btn {
+    padding: 0.5em 0.7em;
+    cursor: pointer;
+    background: #666;
+    color: white;
+    border-radius: 0.7em;
+    transition: all 100ms ease-in;
+    user-select: none;
+  }
+
+  .btn:hover {
+    background: #777;
+  }
+
+  .btn:active {
+    background: #888;
+  }
+
+  .btn.active {
+    background: #33AA00;
+  }
+
+  div.ui-frame {
+    margin: 1em;
+    padding: 0.5em 0.75em;
+    border: 1px solid #999;
+    border-radius: 0.5em;
+    position: relative;
+    float: left;
+    display: block;
+  }
+
+  div.ui-group {
+    position: relative;
+    display: block;
+    clear: both;
+    margin-top: 0.5em;
+  }
+
+  div.ui-group::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  div.ui-item {
+    position: relative;
+    float: left;
+    margin: 0 1em 0.3em 0;
+    border-radius: 0.2em;
+  }
+
+  span.label {
+    font-family: monospace;
+    font-size: 0.8em;
+    display: inline-block;
+    padding-right: 0.4em;
+  }
+
+  div.ui-item input[type=number] {
+    width: 5em;
+  }
+
+  div.ui-item input[type=checkbox] {
+    padding: 0;
+    margin: 0;
+  }
+
+  #messages {
+    width: 200px;
+    height: 20em;
+    overflow: scroll;
+  }
+
+  #messages h1 span u {
+    position: absolute;
+    right: 0;
+    top: 0.5em;
+    font-size: 0.7em;
+    color: #CCC;
+    cursor: pointer;
+  }
+
+  #messages li {
+    position: relative;
+    clear: both;
+    font-family: monospace;
+    font-size: 0.8em;
+    list-style: none;
+  }
+
+  .motion.btn {
+    background: white;
+    border: 1px solid #999;
+    color: black;
+    width: 3em;
+    height: 3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .motion.btn:hover {
+    background: #EEE;
+  }
+
+  .motion.btn:active {
+    background: #DDD;
+  }
+
+  #actions-container {
+    width: 95%;
+  }
+
+  #raw-gcode-container {
+    width: 300px;
+  }
+
+  #raw-gcode-container textarea {
+    width: 100%;
+    height: 10em;
+  }
+
+  .action-item {
+    width: 20em;
+    position: relative;
+    float: left;
+    margin: 0 2em 2em 0;
+    padding: 1em;
+    background: #F0F0F0;
+    border-radius: 0.5em;
+    min-height: 25em;
+  }
+
+  .action-meta-menu {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .action-modify-btn {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    font-size: 0.8em;
+    font-family: monospace;
+    color: #999;
+    margin-bottom: 1em;
+  }
+
+  .action-item h1 {
+    margin-bottom: 0.25em;
+  }
+
+  .action-item p {
+    font-size: 0.8em;
+    margin-bottom: 1.5em;
+    color: #666;
+  }
+
+  .action-item .btn {
+    position: relative;
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .modal {
+    position: fixed;
+    width: 50vw;
+    height: 80vh;
+    top: 10vh;
+    left: 25vw;
+    background: white;
+    border: 1px solid #999;
+    box-shadow: 0 1em 2em rgba(0, 0, 0, 0.2);
+    border-radius: 1em;
+    z-index: 99;
+    display: none;
+    padding: 2em;
+    overflow-y: scroll;
+  }
+
+  #actions-editor-modal {
+    max-width: 600px;
+    left: max(25vw, calc(50vw - 300px));
+  }
+
+  .modal.active {
+    display: block;
+  }
+
+  #close-modal-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1.5em;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+  }
+
+  .actions-editor-group {
+    position: relative;
+    clear: both;
+    margin-top: 1em;
+    display: flex;
+    align-items: top;
+    flex-wrap: wrap;
+  }
+
+  .actions-editor-group span.label {
+    width: 10em;
+  }
+
+  .actions-editor-group span.label.description {
+    width: 100%;
+  }
+
+  textarea {
+    height: 10em;
+  }
+
+  .actions-editor-group textarea,
+  .actions-editor-group input {
+    padding: 0.5em;
+  }
+
+  #action-name,
+  #action-description,
+  #action-gcode {
+    width: 25em;
+  }
+
+  #action-variables-container {
+    position: relative;
+    clear: both;
+  }
+
+  .action-variable-item {
+    position: relative;
+    clear: both;
+  }
+
+  .action-variable-item span.label {
+    width: 3em;
+  }
+
+  .action-variable-item input {
+    margin-right: 2em;
+  }
+
+  .close-btn {
+    cursor: pointer;
+    font-size: 1.25em;
+  }
+
+  #actions-editor-messages {
+    font-size: 1em;
+    font-family: monospace;
+    color: red;
+    list-style: none;
+  }
