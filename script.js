@@ -122,7 +122,7 @@ function setup() {
       document.querySelector("#fan-on").checked = false;
     }
   });
-
+}
 
 function draw() {
   if (activeAction !== "") {
@@ -319,4 +319,3 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function(){
 } else {
   pushMessage("initialize printer first", "red");
 }})
-
