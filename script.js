@@ -16,9 +16,6 @@ function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   fab = createFab();
 
-  loadActions();
-  initActionEditor();
-
   loadLocalData();
 
   const dataInputs = document.querySelectorAll("input");
