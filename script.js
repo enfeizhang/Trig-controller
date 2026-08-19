@@ -121,47 +121,11 @@ function setup() {
 }
 
 function draw() {
-  if (activeAction !== "") {
-    if (loopingAction) {
-      const activeElement = document.querySelector(`#action-${activeAction}-loop`);
-      if (activeElement) {
-        activeElement.classList.add("active");
-      }
-    } else {
-      const activeElement = document.querySelector(`#action-${activeAction}-loop`);
-      if (activeElement) {
-        activeElement.classList.remove("active");
-      }
-    }
-  }
   if (fab.isPrinting) {
     console.log(fab.commands);
     document.querySelector("#start-btn").classList.add("active");
     if (fab.commands.length === 0) {
-      if (activeAction !== "") {
-        if (loopingAction) {
-          if (Date.now() - loopTimestamp > loopInterval) {
-            loopTimestamp = Date.now();
-            loopInterval = document.querySelector(`#action-${activeAction}-interval`).value;
-            const activeElement = document.querySelector(`#action-${activeAction}-run`);
-            activeElement.click();
-          }
-        } else {
-          const activeElement = document.querySelector(`#action-${activeAction}-run`);
-          if (activeElement) {
-            activeElement.classList.remove("active");
-          }
-          activeAction = "";
-        }
-      }
       pushMessage("awaiting gcode", "#999", true);
-    } else {
-      if (activeAction !== "") {
-        const activeElement = document.querySelector(`#action-${activeAction}-run`);
-        if (activeElement) {
-          activeElement.classList.add("active");
-        }
-      }
     }
   } else {
     document.querySelector("#start-btn").classList.remove("active");
