@@ -211,7 +211,7 @@ G0 X${Xc + A} F2000
 G0 Z${Zpen + 3} F2000
 G0 X${Xc} F2000
 G0 Z${Zpen} F2000
-G0 Y${ytot} F2000
+G0 Y${ytot + 60} F2000
 G0 Z${Zpen + 3} F2000
 G0 X${Xc} Y60 F2000`;
 
