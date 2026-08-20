@@ -205,7 +205,7 @@ function checkGcode(_gcode) {
 
 document.querySelector("#axes-btn").addEventListener("click", () => {
   const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
-  const rawaxessequence = `G0 X${Xc - A} Y0 Z${Zpen + 3} F2000
+  const rawaxessequence = `G0 X${Xc - A} Y60 Z${Zpen + 3} F2000
 G0 Z${Zpen} F2000
 G0 X${Xc + A} F2000
 G0 Z${Zpen + 3} F2000
@@ -213,7 +213,7 @@ G0 X${Xc} F2000
 G0 Z${Zpen} F2000
 G0 Y${ytot} F2000
 G0 Z${Zpen + 3} F2000
-G0 X${Xc} Y0 F2000`;
+G0 X${Xc} Y60 F2000`;
 
   if (fab.isPrinting) {
     fab.commands = rawaxessequence
@@ -230,7 +230,7 @@ G0 X${Xc} Y0 F2000`;
 document.querySelector("#reset-btn").addEventListener("click", () => {
   const resetsequence = `G90
 G0 Z${Zpen + 3} F1000
-G0 X${Xc} Y0 F5000`;
+G0 X${Xc} Y60 F5000`;
 
   if (fab.isPrinting) {
     fab.commands = resetsequence
@@ -258,8 +258,8 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     yvaluesdown.push(i);
   }
 
-  const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y} F1000`);
-  const sinegraphgcode = `G90\nG0 X${Xc} Y0 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
+  const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`);
+  const sinegraphgcode = `G90\nG0 X${Xc} Y60 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
 
   if (fab.isPrinting) {
     const formattedGcode = sinegraphgcode
