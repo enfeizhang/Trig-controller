@@ -204,14 +204,24 @@ function checkGcode(_gcode) {
 }
 
 document.querySelector("#axes-btn").addEventListener("click", () => {
-  const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
-  const rawaxessequence = `G0 X${Xc - A} Y60 Z${Zpen + 3} F2000
+  const rawaxessequence = 
+`G0 X${Xc - 90} Y60 Z${Zpen + 3} F2000
 G0 Z${Zpen} F2000
-G0 X${Xc + A} F2000
+G0 X${Xc - 85} Y65 F2000
+G0 Z${Zpen + 3} F2000
+G0 Y55 F2000
+G0 Z${Zpen} F2000
+G0 X${Xc - 90} Y60 F2000
+G0 X${Xc + 90} F2000
 G0 Z${Zpen + 3} F2000
 G0 X${Xc} F2000
 G0 Z${Zpen} F2000
-G0 Y${ytot + 60} F2000
+G0 Y${ytot + 70} F2000
+G0 X${Xc - 5} Y${ytot + 65} F2000
+G0 Z${Zpen + 3} F2000
+G0 X${Xc + 5} F2000
+G0 Z${Zpen} F2000
+G0 X${Xc} Y${ytot + 70} F2000
 G0 Z${Zpen + 3} F2000
 G0 X${Xc} Y60 F2000`;
 
@@ -245,7 +255,7 @@ G0 X${Xc} Y60 F5000`;
 });
 
 function sy(y, amp, length, midline) {
-  return Xc + amp * Math.sin((2 * Math.PI / length) * y) + midline;
+  return Xc - amp * Math.sin((2 * Math.PI / length) * y) - midline;
 }
 
 document.querySelector('#drawgraph-btn').addEventListener("click", function() {
@@ -270,6 +280,38 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     fab.print();
 
     pushMessage("sent custom sine graph sequence", "blue");
+  } else {
+    pushMessage("initialize printer first", "red");
+  }
+});
+
+document.querySelector("#penup").addEventListener("click", () => {
+  const penupsequence = `G90
+G0 Z${Zpen + 3} F1000`
+
+  if (fab.isPrinting) {
+    fab.commands = penupsequence
+      .split("\n")
+      .map(line => checkGcode(line.trim()));
+
+    fab.print();
+    pushMessage("sent pen up sequence", "blue");
+  } else {
+    pushMessage("initialize printer first", "red");
+  }
+});
+
+document.querySelector("#pendown").addEventListener("click", () => {
+  const pendownsequence = `G90
+G0 Z${Zpen} F1000`
+
+  if (fab.isPrinting) {
+    fab.commands = pendownsequence
+      .split("\n")
+      .map(line => checkGcode(line.trim()));
+
+    fab.print();
+    pushMessage("sent pen down sequence", "blue");
   } else {
     pushMessage("initialize printer first", "red");
   }
