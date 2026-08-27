@@ -283,16 +283,38 @@ document.querySelector("#reset-btn").addEventListener("click", () => {
 function sy(y, amp, length, midline) {
   return Xc - amp * Math.sin((2 * Math.PI / length) * y) - midline;
 }
+function cscy(y, amp, length, midline) {
+  const cosVal = Math.cos((2 * Math.PI / length) * y);
+  
+  if (Math.abs(cosVal) < 0.0001) {
+    return -999;
+  }
 
+  return Xc - amp * (1 / cosVal) - midline;
+}
 function cy(y, amp, length, midline) {
   return Xc - amp * Math.cos((2 * Math.PI / length) * y) - midline;
 }
 
+function secy(y, amp, length, midline) {
+  const cosVal = Math.cos((2 * Math.PI / length) * y);
+  
+  if (Math.abs(cosVal) < 0.0001) {
+    return -999;
+  }
+
+  return Xc - amp * (1 / cosVal) - midline;
+}
 
 function ty(y, amp, length, midline) {
   return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
+function coty(y, amp, length, midline) {
+  const tanVal = Math.tan((2 * Math.PI / length) * y);
+  if (Math.abs(tanVal) < 0.0001) return -999;
+  return Xc - amp * (1 / tanVal) - midline;
+}
 //   const yvaluesdown = [];
 //   for (let i = 0; i <= ytot; i += 2) {
 //     yvaluesdown.push(i);
@@ -333,6 +355,95 @@ let gcodedownlist;
         else if(document.querySelector('#trigtype').value == "tangent") {
           let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: ty(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    }))
+   let processedList = [];
+    let isPenUp = false;
+
+    for (let cmd of rawgcodelist) {
+      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+
+      if (isOutOfBounds) {
+        if (!isPenUp) {
+          processedList.push(new Gcode("G0", { z: Zpen + 3, f: 1000 }));
+          isPenUp = true;
+        }
+      } else {
+        if (isPenUp) {
+          processedList.push(new Gcode("G0", { x: cmd.x, y: cmd.y, f: 4000 }));
+          processedList.push(new Gcode("G0", { z: Zpen, f: 1000 }));
+          isPenUp = false;
+        } else {
+          processedList.push(cmd);
+        }
+      }
+    }
+    gcodedownlist = processedList.map(cmd => cmd.toString());
+  }
+
+          else if(document.querySelector('#trigtype').value == "secant") {
+          let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
+      x: secy(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    }))
+   let processedList = [];
+    let isPenUp = false;
+
+    for (let cmd of rawgcodelist) {
+      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+
+      if (isOutOfBounds) {
+        if (!isPenUp) {
+          processedList.push(new Gcode("G0", { z: Zpen + 3, f: 1000 }));
+          isPenUp = true;
+        }
+      } else {
+        if (isPenUp) {
+          processedList.push(new Gcode("G0", { x: cmd.x, y: cmd.y, f: 4000 }));
+          processedList.push(new Gcode("G0", { z: Zpen, f: 1000 }));
+          isPenUp = false;
+        } else {
+          processedList.push(cmd);
+        }
+      }
+    }
+    gcodedownlist = processedList.map(cmd => cmd.toString());
+  }
+          else if(document.querySelector('#trigtype').value == "cosecant") {
+          let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
+      x: cscy(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    }))
+   let processedList = [];
+    let isPenUp = false;
+
+    for (let cmd of rawgcodelist) {
+      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+
+      if (isOutOfBounds) {
+        if (!isPenUp) {
+          processedList.push(new Gcode("G0", { z: Zpen + 3, f: 1000 }));
+          isPenUp = true;
+        }
+      } else {
+        if (isPenUp) {
+          processedList.push(new Gcode("G0", { x: cmd.x, y: cmd.y, f: 4000 }));
+          processedList.push(new Gcode("G0", { z: Zpen, f: 1000 }));
+          isPenUp = false;
+        } else {
+          processedList.push(cmd);
+        }
+      }
+    }
+    gcodedownlist = processedList.map(cmd => cmd.toString());
+  }
+
+            else if(document.querySelector('#trigtype').value == "cotangent") {
+          let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
+      x: coty(y, A, wlen, D),
       y: y + 60,
       f: 1000
     }))
