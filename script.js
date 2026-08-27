@@ -230,9 +230,6 @@ class Gcode {
   }
 }
 
-
-
-
 document.querySelector("#axes-btn").addEventListener("click", () => {
   const rawaxessequence = [
   new Gcode("G0", { x: Xc - 90, y: 60, z: Zpen + 3, f: 2000 }),
@@ -267,14 +264,14 @@ document.querySelector("#axes-btn").addEventListener("click", () => {
 });
 
 document.querySelector("#reset-btn").addEventListener("click", () => {
-  const resetsequence = `G90
-G0 Z${Zpen + 3} F1000
-G0 X${Xc} Y60 F5000`;
+  const resetsequence =[
+  new Gcode("G90"),
+  new Gcode("G0", { z: Zpen + 3, f: 1000 }),
+  new Gcode("G0", { x: Xc, y: 60, f: 5000 })
+];
 
   if (fab.isPrinting) {
-    fab.commands = resetsequence
-      .split("\n")
-      .map(line => checkGcode(line.trim()));
+    fab.commands = resetsequence.map(cmd => cmd.toString());
 
     fab.print();
     pushMessage("sent reset sequence", "blue");
@@ -320,19 +317,49 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
 let gcodedownlist; 
 
   if(document.querySelector('#trigtype').value == "sine") {
-    gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`)}
-    else {
-    gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
+    gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
+      x: sy(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    })).map(cmd => cmd.toString())}
 
+    else if(document.querySelector('#trigtype').value == "cosine") {
+    gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
+      x: cy(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    })).map(cmd => cmd.toString())}
 
-  const sinegraphgcode = `G90\nG0 X${Xc} Y60 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
+        else if(document.querySelector('#trigtype').value == "tangent") {
+          gcodedownlist = yvaluesdown
+  .map(y => ({ x: ty(y, A, wlen, D), y: y + 60 }))
+  .reduce((acc, pt) => {
+    if (!(pt.x >= 20 && pt.x <= 200)) return { strokes: acc.strokes, active: [] };
 
-  if (fab.isPrinting) {
-    const formattedGcode = sinegraphgcode
-      .split("\n")
-      .map(line => checkGcode(line));
+    if (acc.active.length === 0) {
+      const nextStroke = [pt];
+      return { strokes: [...acc.strokes, nextStroke], active: nextStroke };
+    }
+    
+    acc.active.push(pt);
+    return acc;
+  }, { strokes: [], active: [] }).strokes
 
-    fab.commands = formattedGcode;
+  .flatMap(stroke => [
+    new Gcode("G0", { z: Zpen + 3, f: 1000}),
+    new Gcode("G0", { x: stroke[0].x, y: stroke[0].y, f: 1000 }),
+    new Gcode("G0", { z: Zpen, f: 1000}),
+    ...stroke.slice(1).map(pt => new Gcode("G0", { x: pt.x, y: pt.y, f: 1000}))
+  ]).map(cmd => cmd.toString());}
+
+if (fab.isPrinting) {
+    fab.commands = [
+      new Gcode("G90").toString(),
+      new Gcode("G0", { x: Xc, y: 60, f: 4000 }).toString(),
+      new Gcode("G0", { z: Zpen, f: 1000 }).toString(),
+      ...gcodedownlist
+    ];
+
     fab.print();
 
     pushMessage("sent custom trig graph sequence", "blue");
@@ -342,13 +369,12 @@ let gcodedownlist;
 });
 
 document.querySelector("#penup").addEventListener("click", () => {
-  const penupsequence = `G90
-G0 Z${Zpen + 3} F1000`
+  const penupsequence = [
+  new Gcode("G90"),
+  new Gcode("G0", { z: Zpen + 3, f: 1000 })];
 
   if (fab.isPrinting) {
-    fab.commands = penupsequence
-      .split("\n")
-      .map(line => checkGcode(line.trim()));
+    fab.commands = penupsequence.map(cmd => cmd.toString());
 
     fab.print();
     pushMessage("sent pen up sequence", "blue");
@@ -358,13 +384,12 @@ G0 Z${Zpen + 3} F1000`
 });
 
 document.querySelector("#pendown").addEventListener("click", () => {
-  const pendownsequence = `G90
-G0 Z${Zpen} F1000`
+  const pendownsequence = [
+    new Gcode("G90"),
+  new Gcode("G0", { z: Zpen, f: 1000 })];
 
   if (fab.isPrinting) {
-    fab.commands = pendownsequence
-      .split("\n")
-      .map(line => checkGcode(line.trim()));
+    fab.commands = pendownsequence.map(cmd => cmd.toString());
 
     fab.print();
     pushMessage("sent pen down sequence", "blue");
