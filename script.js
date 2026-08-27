@@ -283,48 +283,36 @@ document.querySelector("#reset-btn").addEventListener("click", () => {
 function sy(y, amp, length, midline) {
   return Xc - amp * Math.sin((2 * Math.PI / length) * y) - midline;
 }
-function cscy(y, amp, length, midline) {
-  const cosVal = Math.cos((2 * Math.PI / length) * y);
-  
-  if (Math.abs(cosVal) < 0.0001) {
-    return -999;
-  }
 
-  return Xc - amp * (1 / cosVal) - midline;
-}
 function cy(y, amp, length, midline) {
   return Xc - amp * Math.cos((2 * Math.PI / length) * y) - midline;
-}
-
-function secy(y, amp, length, midline) {
-  const cosVal = Math.cos((2 * Math.PI / length) * y);
-  
-  if (Math.abs(cosVal) < 0.0001) {
-    return -999;
-  }
-
-  return Xc - amp * (1 / cosVal) - midline;
 }
 
 function ty(y, amp, length, midline) {
   return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
-function coty(y, amp, length, midline) {
-  const tanVal = Math.tan((2 * Math.PI / length) * y);
-  if (Math.abs(tanVal) < 0.0001) return -999;
-  return Xc - amp * (1 / tanVal) - midline;
+function secy(y, amp, length, midline) {
+  const cosVal = Math.cos((2 * Math.PI / length) * y);
+  if (Math.abs(cosVal) < 0.001) return -999; // Near asymptote
+  const val = Xc - amp * (1 / cosVal) - midline;
+  return isFinite(val) ? val : -999;
 }
-//   const yvaluesdown = [];
-//   for (let i = 0; i <= ytot; i += 2) {
-//     yvaluesdown.push(i);
-//   }
-// const gcodedownlist = yvaluesdown
-//   .map(y => ({ x: ty(y, 60, 100, 10), y }))
-//   .filter(point => point.x >= 20 && point.x <= 200)
-//   .map(point => `G0 X${point.x} Y${point.y + 60} F1000`);
 
-//   console.log(gcodedownlist)
+function cscy(y, amp, length, midline) {
+  const sinVal = Math.sin((2 * Math.PI / length) * y); // Fixed to sin
+  if (Math.abs(sinVal) < 0.001) return -999; // Near asymptote
+  const val = Xc - amp * (1 / sinVal) - midline;
+  return isFinite(val) ? val : -999;
+}
+
+function coty(y, amp, length, midline) {
+  const sinVal = Math.sin((2 * Math.PI / length) * y);
+  const cosVal = Math.cos((2 * Math.PI / length) * y);
+  if (Math.abs(sinVal) < 0.001) return -999; // Near asymptote (where tan is 0)
+  const val = Xc - amp * (cosVal / sinVal) - midline; // cos/sin is safer than 1/tan
+  return isFinite(val) ? val : -999;
+}
 
 document.querySelector('#drawgraph-btn').addEventListener("click", function() {
   const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
@@ -392,7 +380,7 @@ let gcodedownlist;
     let isPenUp = false;
 
     for (let cmd of rawgcodelist) {
-      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+const isOutOfBounds = !Number.isFinite(cmd.x) || cmd.x < 20 || cmd.x > 200;
 
       if (isOutOfBounds) {
         if (!isPenUp) {
@@ -421,7 +409,7 @@ let gcodedownlist;
     let isPenUp = false;
 
     for (let cmd of rawgcodelist) {
-      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+const isOutOfBounds = !Number.isFinite(cmd.x) || cmd.x < 20 || cmd.x > 200;
 
       if (isOutOfBounds) {
         if (!isPenUp) {
@@ -451,7 +439,7 @@ let gcodedownlist;
     let isPenUp = false;
 
     for (let cmd of rawgcodelist) {
-      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+const isOutOfBounds = !Number.isFinite(cmd.x) || cmd.x < 20 || cmd.x > 200;
 
       if (isOutOfBounds) {
         if (!isPenUp) {
