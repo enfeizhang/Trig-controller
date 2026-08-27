@@ -290,7 +290,7 @@ function cy(y, amp, length, midline) {
 
 
 function ty(y, amp, length, midline) {
-  return Xc + amp * Math.tan((2 * Math.PI / length) * y) - midline;
+  return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
 //   const yvaluesdown = [];
@@ -331,11 +331,34 @@ let gcodedownlist;
     })).map(cmd => cmd.toString())}
 
         else if(document.querySelector('#trigtype').value == "tangent") {
-          gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
+          let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: ty(y, A, wlen, D),
       y: y + 60,
       f: 1000
-    })).map(cmd => cmd.toString())}
+    }))
+   let processedList = [];
+    let isPenUp = false;
+
+    for (let cmd of rawgcodelist) {
+      const isOutOfBounds = cmd.x < 20 || cmd.x > 200;
+
+      if (isOutOfBounds) {
+        if (!isPenUp) {
+          processedList.push(new Gcode("G0", { z: Zpen + 3, f: 1000 }));
+          isPenUp = true;
+        }
+      } else {
+        if (isPenUp) {
+          processedList.push(new Gcode("G0", { x: cmd.x, y: cmd.y, f: 4000 }));
+          processedList.push(new Gcode("G0", { z: Zpen, f: 1000 }));
+          isPenUp = false;
+        } else {
+          processedList.push(cmd);
+        }
+      }
+    }
+    gcodedownlist = processedList.map(cmd => cmd.toString());
+  }
 
 if (fab.isPrinting) {
     fab.commands = [
