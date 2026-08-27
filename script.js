@@ -258,6 +258,21 @@ function sy(y, amp, length, midline) {
   return Xc - amp * Math.sin((2 * Math.PI / length) * y) - midline;
 }
 
+function cy(y, amp, length, midline) {
+  return Xc - amp * Math.cos((2 * Math.PI / length) * y) - midline;
+}
+
+
+function ty(y, amp, length, midline) {
+  return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
+}
+
+const gcodedownlist = yvaluesdown
+  .map(y => ({ x: ty(y, 60, 100, 10), y }))
+  .filter(point => point.x >= 20 && point.x <= 200)
+  .map(point => `G0 X${point.x} Y${point.y + 60} F1000`);
+
+  
 document.querySelector('#drawgraph-btn').addEventListener("click", function() {
   const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
   const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100;
@@ -268,7 +283,12 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     yvaluesdown.push(i);
   }
 
-  const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`);
+  if(document.querySelector('#trigtype').value == "sine") {
+    const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`)}
+    else {
+      const gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
+
+
   const sinegraphgcode = `G90\nG0 X${Xc} Y60 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
 
   if (fab.isPrinting) {
@@ -279,7 +299,7 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     fab.commands = formattedGcode;
     fab.print();
 
-    pushMessage("sent custom sine graph sequence", "blue");
+    pushMessage("sent custom trig graph sequence", "blue");
   } else {
     pushMessage("initialize printer first", "red");
   }
