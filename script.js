@@ -290,7 +290,7 @@ function cy(y, amp, length, midline) {
 
 
 function ty(y, amp, length, midline) {
-  return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
+  return Xc + amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
 //   const yvaluesdown = [];
@@ -331,26 +331,11 @@ let gcodedownlist;
     })).map(cmd => cmd.toString())}
 
         else if(document.querySelector('#trigtype').value == "tangent") {
-          gcodedownlist = yvaluesdown
-  .map(y => ({ x: ty(y, A, wlen, D), y: y + 60 }))
-  .reduce((acc, pt) => {
-    if (!(pt.x >= 20 && pt.x <= 200)) return { strokes: acc.strokes, active: [] };
-
-    if (acc.active.length === 0) {
-      const nextStroke = [pt];
-      return { strokes: [...acc.strokes, nextStroke], active: nextStroke };
-    }
-    
-    acc.active.push(pt);
-    return acc;
-  }, { strokes: [], active: [] }).strokes
-
-  .flatMap(stroke => [
-    new Gcode("G0", { z: Zpen + 3, f: 1000}),
-    new Gcode("G0", { x: stroke[0].x, y: stroke[0].y, f: 1000 }),
-    new Gcode("G0", { z: Zpen, f: 1000}),
-    ...stroke.slice(1).map(pt => new Gcode("G0", { x: pt.x, y: pt.y, f: 1000}))
-  ]).map(cmd => cmd.toString());}
+          gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
+      x: ty(y, A, wlen, D),
+      y: y + 60,
+      f: 1000
+    })).map(cmd => cmd.toString())}
 
 if (fab.isPrinting) {
     fab.commands = [
