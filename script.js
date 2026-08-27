@@ -203,32 +203,61 @@ function checkGcode(_gcode) {
   }
 }
 
+class Gcode {
+  constructor(type = "G0", params = {}) {
+    this.type = type.toUpperCase().trim();
+    this.x = params.x !== undefined ? Number(params.x) : null;
+    this.y = params.y !== undefined ? Number(params.y) : null;
+    this.z = params.z !== undefined ? Number(params.z) : null;
+    this.e = params.e !== undefined ? Number(params.e) : null;
+    this.f = params.f !== undefined ? Number(params.f) : null; // Feed rate / speed
+  }
+
+  formatNum(num) {
+    return Math.round(num * 1000) / 1000; //3dp
+  }
+
+  toString() {
+    let parts = [this.type];
+
+    if (this.x !== null) parts.push(`X${this.formatNum(this.x)}`);
+    if (this.y !== null) parts.push(`Y${this.formatNum(this.y)}`);
+    if (this.z !== null) parts.push(`Z${this.formatNum(this.z)}`);
+    if (this.e !== null) parts.push(`E${this.formatNum(this.e)}`);
+    if (this.f !== null) parts.push(`F${Math.round(this.f)}`);
+
+    return parts.join(" ");
+  }
+}
+
+
+
+
 document.querySelector("#axes-btn").addEventListener("click", () => {
-  const rawaxessequence = 
-`G0 X${Xc - 90} Y60 Z${Zpen + 3} F2000
-G0 Z${Zpen} F2000
-G0 X${Xc - 85} Y65 F2000
-G0 Z${Zpen + 3} F2000
-G0 Y55 F2000
-G0 Z${Zpen} F2000
-G0 X${Xc - 90} Y60 F2000
-G0 X${Xc + 90} F2000
-G0 Z${Zpen + 3} F2000
-G0 X${Xc} F2000
-G0 Z${Zpen} F2000
-G0 Y${ytot + 70} F2000
-G0 X${Xc - 5} Y${ytot + 65} F2000
-G0 Z${Zpen + 3} F2000
-G0 X${Xc + 5} F2000
-G0 Z${Zpen} F2000
-G0 X${Xc} Y${ytot + 70} F2000
-G0 Z${Zpen + 3} F2000
-G0 X${Xc} Y60 F2000`;
+  const rawaxessequence = [
+  new Gcode("G0", { x: Xc - 90, y: 60, z: Zpen + 3, f: 2000 }),
+  new Gcode("G0", { z: Zpen, f: 2000 }),
+  new Gcode("G0", { x: Xc - 85, y: 65, f: 2000 }),
+  new Gcode("G0", { z: Zpen + 3, f: 2000 }),
+  new Gcode("G0", { y: 55, f: 2000 }),
+  new Gcode("G0", { z: Zpen, f: 2000 }),
+  new Gcode("G0", { x: Xc - 90, y: 60, f: 2000 }),
+  new Gcode("G0", { x: Xc + 90, f: 2000 }),
+  new Gcode("G0", { z: Zpen + 3, f: 2000 }),
+  new Gcode("G0", { x: Xc, f: 2000 }),
+  new Gcode("G0", { z: Zpen, f: 2000 }),
+  new Gcode("G0", { y: ytot + 70, f: 2000 }),
+  new Gcode("G0", { x: Xc - 5, y: ytot + 65, f: 2000 }),
+  new Gcode("G0", { z: Zpen + 3, f: 2000 }),
+  new Gcode("G0", { x: Xc + 5, f: 2000 }),
+  new Gcode("G0", { z: Zpen, f: 2000 }),
+  new Gcode("G0", { x: Xc, y: ytot + 70, f: 2000 }),
+  new Gcode("G0", { z: Zpen + 3, f: 2000 }),
+  new Gcode("G0", { x: Xc, y: 60, f: 2000 })
+];
 
   if (fab.isPrinting) {
-    fab.commands = rawaxessequence
-      .split("\n")
-      .map(line => checkGcode(line.trim()));
+    fab.commands = rawaxessequence.map(cmd => cmd.toString());
 
     fab.print();
     pushMessage("sent axes sequence", "blue");
@@ -267,12 +296,17 @@ function ty(y, amp, length, midline) {
   return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
+//   const yvaluesdown = [];
+//   for (let i = 0; i <= ytot; i += 2) {
+//     yvaluesdown.push(i);
+//   }
 // const gcodedownlist = yvaluesdown
 //   .map(y => ({ x: ty(y, 60, 100, 10), y }))
 //   .filter(point => point.x >= 20 && point.x <= 200)
 //   .map(point => `G0 X${point.x} Y${point.y + 60} F1000`);
 
-  
+//   console.log(gcodedownlist)
+
 document.querySelector('#drawgraph-btn').addEventListener("click", function() {
   const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
   const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100;
@@ -283,12 +317,12 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     yvaluesdown.push(i);
   }
 
-  let gcodedownlist;
+let gcodedownlist; 
 
   if(document.querySelector('#trigtype').value == "sine") {
     gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`)}
     else {
-      gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
+    gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
 
 
   const sinegraphgcode = `G90\nG0 X${Xc} Y60 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
