@@ -283,10 +283,12 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
     yvaluesdown.push(i);
   }
 
+  let gcodedownlist;
+
   if(document.querySelector('#trigtype').value == "sine") {
-    const gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`)}
+    gcodedownlist = yvaluesdown.map(y => `G0 X${sy(y, A, wlen, D)} Y${y + 60} F1000`)}
     else {
-      const gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
+      gcodedownlist = yvaluesdown.map(y => `G0 X${cy(y, A, wlen, D)} Y${y + 60} F1000`)}
 
 
   const sinegraphgcode = `G90\nG0 X${Xc} Y60 F4000\nG0 Z${Zpen} F1000\n` + gcodedownlist.join("\n");
