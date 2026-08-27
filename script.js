@@ -267,10 +267,10 @@ function ty(y, amp, length, midline) {
   return Xc - amp * Math.tan((2 * Math.PI / length) * y) - midline;
 }
 
-const gcodedownlist = yvaluesdown
-  .map(y => ({ x: ty(y, 60, 100, 10), y }))
-  .filter(point => point.x >= 20 && point.x <= 200)
-  .map(point => `G0 X${point.x} Y${point.y + 60} F1000`);
+// const gcodedownlist = yvaluesdown
+//   .map(y => ({ x: ty(y, 60, 100, 10), y }))
+//   .filter(point => point.x >= 20 && point.x <= 200)
+//   .map(point => `G0 X${point.x} Y${point.y + 60} F1000`);
 
   
 document.querySelector('#drawgraph-btn').addEventListener("click", function() {
