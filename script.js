@@ -528,14 +528,18 @@ document.querySelector("#applychanges").addEventListener("click", function(){
   outofboundsalert();
 
   function displayfunction(Trig, A, b, D){
-    let sign = "";
-    if (D > 0) { sign = "+ "; }
-    else if (D < 0) { sign = "- "; }
-    
-    // Convert D to positive for the display string if negative
-    let displayD = Math.abs(D);
-    
-    return `y = ${A} ${Trig}((${b}) x) ${sign}${displayD}`;
+    let dString = "";
+
+    if (D === "D") {
+      dString = " + D";
+    } else if (typeof D === "number" && D > 0) {
+      dString = ` + ${D}`;
+    } else if (typeof D === "number" && D < 0) {
+      dString = ` - ${Math.abs(D)}`;
+    }
+    // If D === 0, dString remains empty (""), hiding the 0 completely!
+
+    return `y = ${A} ${Trig}((${b}) x)${dString}`;
   }
 
   const rawA = parseFloat(document.querySelector('#amplitude-input').value);
