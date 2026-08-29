@@ -521,18 +521,37 @@ document.querySelector("#pendown").addEventListener("click", function(){
   }
 });
 
+
+
+
 document.querySelector("#applychanges").addEventListener("click", function(){
-outofboundsalert()
+  outofboundsalert();
 
   function displayfunction(Trig, A, b, D){
-  let sign 
-  if(D<0){sign = ""}
-  else if(D>=0){sign = "+"}
-  return `y = ${A} ${Trig}((${b}) x) ${sign} ${D}`
-}
+    let sign = "";
+    if (D > 0) { sign = "+ "; }
+    else if (D < 0) { sign = "- "; }
+    
+    // Convert D to positive for the display string if negative
+    let displayD = Math.abs(D);
+    
+    return `y = ${A} ${Trig}((${b}) x) ${sign}${displayD}`;
+  }
+
+  const rawA = parseFloat(document.querySelector('#amplitude-input').value);
+  const rawW = parseFloat(document.querySelector('#wavelength-input').value);
+  const rawD = parseFloat(document.querySelector('#midline-input').value);
+
+  const A = isNaN(rawA) ? "A" : rawA;
+  const b = isNaN(rawW) ? "150 / λ" : 150 / rawW;
+  const D = isNaN(rawD) ? "D" : rawD;
+
   document.querySelector("#displayfunction").innerHTML = displayfunction(
-  document.querySelector('#trigtype').value,
-parseFloat(document.querySelector('#amplitude-input').value) || "A",
-150 / parseFloat(document.querySelector('#wavelength-input').value) || "150 / λ",
-parseFloat(document.querySelector('#midline-input').value) || "D",
-)})
+    document.querySelector('#trigtype').value,
+    A,
+    b,
+    D
+  );
+});
+
+
