@@ -314,10 +314,26 @@ function coty(y, amp, length, midline) {
   return isFinite(val) ? val : -999;
 }
 
-document.querySelector('#drawgraph-btn').addEventListener("click", function() {
+function outofboundsalert(){
+ const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
+  const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100;
+  const D = parseFloat(document.querySelector('#midline-input').value) || 0;
+
+if (A < -80 || A > 80) {
+    alert("-80 <= A <= 80");}
+  if (wlen <= 0 || wlen > 150) {
+    alert("0 < λ <= 150");}
+  if (D < -80 || D > 80) {
+    alert("-80 <= D <= 80");}
+}
+
+document.querySelector('#drawgraph-btn').addEventListener("click", function(){
+
   const A = parseFloat(document.querySelector('#amplitude-input').value) || 60;
   const wlen = parseFloat(document.querySelector('#wavelength-input').value) || 100;
   const D = parseFloat(document.querySelector('#midline-input').value) || 0;
+
+outofboundsalert()
 
   const yvaluesdown = [];
   for (let i = 0; i <= ytot; i += 2) {
@@ -326,21 +342,21 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function() {
 
 let gcodedownlist; 
 
-  if(document.querySelector('#trigtype').value == "sine") {
+  if(document.querySelector('#trigtype').value == "sin") {
     gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
       x: sy(y, A, wlen, D),
       y: y + 60,
       f: 1000
     })).map(cmd => cmd.toString())}
 
-    else if(document.querySelector('#trigtype').value == "cosine") {
+    else if(document.querySelector('#trigtype').value == "cos") {
     gcodedownlist = yvaluesdown.map(y => new Gcode("G0", {
       x: cy(y, A, wlen, D),
       y: y + 60,
       f: 1000
     })).map(cmd => cmd.toString())}
 
-        else if(document.querySelector('#trigtype').value == "tangent") {
+        else if(document.querySelector('#trigtype').value == "tan") {
           let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: ty(y, A, wlen, D),
       y: y + 60,
@@ -370,7 +386,7 @@ let gcodedownlist;
     gcodedownlist = processedList.map(cmd => cmd.toString());
   }
 
-          else if(document.querySelector('#trigtype').value == "secant") {
+          else if(document.querySelector('#trigtype').value == "sec") {
           let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: secy(y, A, wlen, D),
       y: y + 60,
@@ -399,7 +415,7 @@ const isOutOfBounds = !Number.isFinite(cmd.x) || cmd.x < 20 || cmd.x > 200;
     }
     gcodedownlist = processedList.map(cmd => cmd.toString());
   }
-          else if(document.querySelector('#trigtype').value == "cosecant") {
+          else if(document.querySelector('#trigtype').value == "csc") {
           let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: cscy(y, A, wlen, D),
       y: y + 60,
@@ -429,7 +445,7 @@ const isOutOfBounds = !Number.isFinite(cmd.x) || cmd.x < 20 || cmd.x > 200;
     gcodedownlist = processedList.map(cmd => cmd.toString());
   }
 
-            else if(document.querySelector('#trigtype').value == "cotangent") {
+            else if(document.querySelector('#trigtype').value == "cot") {
           let rawgcodelist = yvaluesdown.map(y => new Gcode("G0", {
       x: coty(y, A, wlen, D),
       y: y + 60,
@@ -475,7 +491,7 @@ if (fab.isPrinting) {
   }
 });
 
-document.querySelector("#penup").addEventListener("click", () => {
+document.querySelector("#penup").addEventListener("click", function() {
   const penupsequence = [
   new Gcode("G90"),
   new Gcode("G0", { z: Zpen + 3, f: 1000 })];
@@ -490,7 +506,7 @@ document.querySelector("#penup").addEventListener("click", () => {
   }
 });
 
-document.querySelector("#pendown").addEventListener("click", () => {
+document.querySelector("#pendown").addEventListener("click", function(){
   const pendownsequence = [
     new Gcode("G90"),
   new Gcode("G0", { z: Zpen, f: 1000 })];
@@ -504,3 +520,24 @@ document.querySelector("#pendown").addEventListener("click", () => {
     pushMessage("initialize printer first", "red");
   }
 });
+
+
+
+
+document.querySelector("#applychanges").addEventListener("click", function(){
+outofboundsalert()
+
+  function displayfunction(Trig, A, b, D){
+  let sign 
+  if(D<0){sign = ""}
+  else if(D>=0){sign = "+"}
+  return `y = ${A} ${Trig}((${b}) x) ${sign} ${D}`
+}
+  document.querySelector("#displayfunction").innerHTML = displayfunction(
+  document.querySelector('#trigtype').value,
+parseFloat(document.querySelector('#amplitude-input').value) || "A",
+150 / parseFloat(document.querySelector('#wavelength-input').value) || "150 / λ",
+parseFloat(document.querySelector('#midline-input').value) || "D",
+)})
+
+
