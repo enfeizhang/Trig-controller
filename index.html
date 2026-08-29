@@ -13,93 +13,124 @@
 
 
 <body>
+<div id="container">
+    <div id="top-controllers">
+      <div class="ui-frame" id="messages">
+        <h1 class="toplabel">Messages <span onclick="clearMsg()"><u>clear</u></span></h1>
+        <div id="message-container"></div>
+      </div>
 
-  <div id="container">
-    <div class="ui-frame" id="messages">
-      <h1>Messages <span onclick="clearMsg()"><u>clear</u></span></h1>
-      <div id="message-container">
+      <div class="ui-frame" id="main-controller">
+        <h1 class="toplabel">Main Controller</h1>
+
+        <div class="ui-group">
+          <div class="ui-item">
+            <div class="btn" id="connect-btn" onclick="_fab.serial.requestPort()">connect to printer</div>
+          </div>
+          <div class="ui-item">
+            <span class="label">fan on</span>
+            <input type="checkbox" id="fan-on">
+          </div>
+          <div class="ui-item">
+            <span class="label">enable cold extrusion</span>
+            <input type="checkbox" id="cold-extrusion">
+          </div>
+        </div>
+
+        <div class="ui-group">
+          <div class="ui-item">
+            <div class="btn" id="start-btn" onclick="">initialize printer</div>
+          </div>
+          <div class="ui-item">
+            <div class="btn" id="stop-btn" onclick="">stop printing</div>
+          </div>
+          <div class="ui-item">
+            <div class="btn" id="heat-btn" onclick="">heat nozzle/bed</div>
+          </div>
+          <div class="ui-item">
+            <div class="btn" id="cool-btn" onclick="">cool nozzle/bed</div>
+          </div>
+        </div>
+
+        <div class="ui-group">
+          <div class="ui-item">
+            <span class="label">Nozzle Temp</span>
+            <input type="number" min="0" step="1" value="200" id="nozzle-temp">
+          </div>
+          <div class="ui-item">
+            <span class="label">Bed Temp</span>
+            <input type="number" min="0" step="1" value="60" id="bed-temp">
+          </div>
+          <div class="ui-item">
+            <span class="label">Fan Speed (0&ndash;255)</span>
+            <input type="number" min="0" step="1" value="255" id="fan-speed">
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="ui-frame" id="main-controller">
-      <h1>Main Controller</h1>
+  <div id="grapher-container">
+  <h1 id="pagetitle">TRIGONOMETRIC GRAPHER</h1>
 
-      <div class="ui-group">
-        <div class="ui-item">
-          <div class="btn" id="connect-btn" onclick="_fab.serial.requestPort()">connect to printer</div>
+
+  <div class="ui-frame" id="Controller">
+    <div id="pencontrol">
+      <h3>Pen Position Control:</h3>
+      <div><button id="penup">↑ Pen Up</button></div>
+      <div><button id="pendown">↓ Pen Down</button></div>
+    </div> 
+
+    <div id="axesbox">
+      <div><button id="axes-btn">Click to Draw Axes</button></div>
+      <div><img src="TrigGraphAxes.png" width="350" height="220" alt="Axes Diagram"></div>
+    </div>
+
+    <div id="originbox">
+      <button id="reset-btn">Return to Origin</button>
+    </div>
+  </div>
+
+  <!-- Variable & Graphing Controller -->
+  <div class="ui-frame" id="variable-controller">
+    <div id="trig-controller">
+      <div id="input-section">
+        <div>
+          <label for="trigtype">Choose a function:</label>
+          <select name="trigtype" id="trigtype">
+            <option value="sin">Sine</option>
+            <option value="cos">Cosine</option>
+            <option value="tan">Tangent</option>
+            <option value="sec">Secant</option>
+            <option value="csc">Cosecant</option>
+            <option value="cot">Cotangent</option>
+          </select>
         </div>
+
+        <div>
+          <span class="label">A, Amplitude (mm)</span>
+          <input id="amplitude-input" placeholder="-80 &lt = A &lt = 80">
+        </div>
+
+        <div>
+          <span class="label">λ, Wavelength (mm)</span>
+          <input id="wavelength-input" placeholder="0 &lt λ &lt = 150">
+        </div>
+
+        <div>
+          <span class="label">D, Midline (mm)</span>
+          <input id="midline-input" placeholder="-80 &lt = D &lt = 80">
+        </div>
+
+        <div><button id="applychanges">Apply Changes</button></div>
       </div>
 
-      <div class="ui-group">
-        <div class="ui-item">
-          <div class="btn" id="start-btn" onclick="">initialize printer</div>
-        </div>
-        <div class="ui-item">
-          <div class="btn" id="stop-btn" onclick="">stop printing</div>
-        </div>
-      </div>
-
-      <div class="ui-group">
-        <div class="ui-item">
-          <span class="label">Nozzle Temp</span> <input type="number" min="0" step="1" value="200" id="nozzle-temp">
-        </div>
-        <div class="ui-item">
-          <span class="label">Bed Temp</span> <input type="number" min="0" step="1" value="60" id="bed-temp">
-        </div>
-      </div>
-
-      <div class="ui-group">
-        <div class="ui-item">
-          <div class="btn" id="heat-btn" onclick="">heat nozzle/bed</div>
-        </div>
-        <div class="ui-item">
-          <div class="btn" id="cool-btn" onclick="">cool nozzle/bed</div>
-        </div>
-      </div>
-
-      <div class="ui-group">
-        <div class="ui-item">
-          <span class="label">Fan Speed (0&ndash;255)</span> <input type="number" min="0" step="1" value="255"
-            id="fan-speed">
-        </div>
-        <div class="ui-item">
-          <span class="label">fan on</span>
-          <input type="checkbox" id="fan-on">
-        </div>
+      <div id="output-section">
+        <div id="displayfunction"></div>
+        <button id="drawgraph-btn">Click to Draw My Graph</button>
       </div>
     </div>
-      <div class="ui-group">
-        <div class="ui-item">
-          <span class="label">enable cold extrusion</span>
-          <input type="checkbox" id="cold-extrusion">
-        </div>
-      </div>
-    
-<div id="variable-controller">
-<input id="amplitude-input" placeholder="A, amplitude, mm (0-80)"> 
-<input id="wavelength-input" placeholder="wavelength, mm (0-150)"> 
-<input id="midline-input" placeholder="D, midline, mm (0)"> 
-<button id="axes-btn"> Draw Axes </button>
-<button id="reset-btn"> Reset </button>
-<button id="drawgraph-btn"> Draw Graph </button>
-<button id="penup"> Lift Pen Up</button>
-<button id="pendown"> Bring Pen Down</button>
-
-<div id="trig-controller">
-<label for="trigtype">Choose a function:</label>
-
-<select name="trigtype" id="trigtype">
-  <option value="sine">Sine</option>
-  <option value="cosine">Cosine</option>
-  <option value="tangent">Tangent</option>
-  <option value="secant">Secant</option>
-  <option value="cosecant">Cosecant</option>
-  <option value="cotangent">Cotangent</option>
-
-</select>
-    </div>
+  </div>
 </div>
-
 
   <script type="text/javascript" src="script.js?v=4"></script>
 </body>
