@@ -521,9 +521,6 @@ document.querySelector("#pendown").addEventListener("click", function(){
   }
 });
 
-
-
-
 document.querySelector("#applychanges").addEventListener("click", function(){
 outofboundsalert()
 
@@ -539,5 +536,3 @@ parseFloat(document.querySelector('#amplitude-input').value) || "A",
 150 / parseFloat(document.querySelector('#wavelength-input').value) || "150 / λ",
 parseFloat(document.querySelector('#midline-input').value) || "D",
 )})
-
-
