@@ -336,7 +336,7 @@ document.querySelector('#drawgraph-btn').addEventListener("click", function(){
 outofboundsalert()
 
   const yvaluesdown = [];
-  for (let i = 0; i <= ytot; i += 2) {
+  for (let i = 0; i <= ytot; i += 0.5) {
     yvaluesdown.push(i);
   }
 
